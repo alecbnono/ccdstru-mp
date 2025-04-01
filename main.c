@@ -15,6 +15,7 @@ int main()
 
         fillSetF(&state);
         fillSetW(state.w);
+        displayBoard(&state);
 
         while (state.over != 1)
         {

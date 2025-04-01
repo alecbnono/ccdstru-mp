@@ -68,6 +68,9 @@ void displayBoard(stateType *state)
 
         printf("\n");
 
+        printf("    1   2   3   4\n");
+        printf("   ---------------\n");
+
         for (i = 1; i <= 4; i++)
         {
                 for (j = 1; j <= 4; j++)
@@ -75,19 +78,21 @@ void displayBoard(stateType *state)
                         tempPos.x = j;
                         tempPos.y = i;
 
+                        if (j == 1)
+                        {
+                                printf("%d |", i);
+                        }
+
                         if (isElementOf(tempPos, state->uno))
                                 printf(" %c ", 'X');
                         else if (isElementOf(tempPos, state->tres))
                                 printf(" %c ", 'O');
                         else
                                 printf(" %c ", ' ');
-
-                        if (j < 4)
-                                printf("|");
+                        printf("|");
                 }
                 printf("\n");
-                if (i < 4)
-                        printf("---------------\n");
+                printf("  |---------------|\n");
         }
         printf("\n");
 }
