@@ -28,9 +28,9 @@ void getPlayerMove(stateType *state)
         posType *pos = &state->input;
 
         if (state->turn && !state->go)
-                printf("=== %s ===\n", "Tres Turn [X]");
+                printf("=== %s ===\n", "Tres Turn [O]");
         else if (state->turn && state->go)
-                printf("=== %s ===\n", "Uno Turn [O]");
+                printf("=== %s ===\n", "Uno Turn [X]");
         else if (!state->turn)
                 printf("=== %s ===\n", "Dos Turn (Delete Position)");
 
