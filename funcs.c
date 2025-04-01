@@ -198,17 +198,20 @@ int isSetElementOfSetW(playerType player, posType w[3][4])
         int setElementOfW = 0;
         int totalMatch = 0;
 
-        for (i = 0; i < 3; i++)
+        if (player.posCount == 4)
         {
-                totalMatch = 0;
+                for (i = 0; i < 3; i++)
+                {
+                        totalMatch = 0;
 
-                for (j = 0; j < 4; j++) // checks if each element of W
-                {                       // is part of player
-                        if (isElementOf(w[i][j], player))
-                                totalMatch += 1;
+                        for (j = 0; j < 4; j++) // checks if each element of W
+                        {                       // is part of player
+                                if (isElementOf(w[i][j], player))
+                                        totalMatch += 1;
+                        }
+                        if(totalMatch == 4)
+                                setElementOfW = 1;
                 }
-                if(totalMatch == 4)
-                        setElementOfW = 1;
         }
 
         return setElementOfW;
@@ -262,9 +265,9 @@ void gameOver(stateType *state)
 
                 if (unoWin)
                         printf("%s Uno Win! %s", COLOR_GREEN, COLOR_RESET);
-                else if (tresWin)
-                        printf("%s Tres Win! %s", COLOR_GREEN, COLOR_RESET);
                 else if (state->f.posCount == 0)
                         printf("%s Dos Win! %s", COLOR_GREEN, COLOR_RESET);
+                else if (tresWin)
+                        printf("%s Tres Win! %s", COLOR_GREEN, COLOR_RESET);
         }
 }
