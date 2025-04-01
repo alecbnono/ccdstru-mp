@@ -18,7 +18,6 @@ typedef struct
 typedef struct
 {
         playerType uno;
-        playerType dos;
         playerType tres;
 
         playerType f;
@@ -27,20 +26,21 @@ typedef struct
         int turn;
         int go;
         int over;
+        posType input;
 
 } stateType;
 
 void flushBuffer();
 void getInput(int *input, char prompt);
-posType getPlayerMove(stateType *state);
+void getPlayerMove(stateType *state);
 void displayBoard(stateType *state);
 int isElementOf(posType pos, playerType player);
-int findPosIndex(posType pos, playerType player);
+int findPosIndex(posType pos, playerType *player);
 void deletePos(posType pos, playerType *player);
 void fillSetF(stateType *state);
 void setFUpdate(stateType *state);
 void fillSetW(posType w[3][4]);
 int isSetElementOfSetW(playerType player, posType w[3][4]);
-void nextPlayerMove(posType pos, stateType *state);
+void nextPlayerMove(stateType *state);
 void setOverState(stateType *state);
 void gameOver(stateType *state);

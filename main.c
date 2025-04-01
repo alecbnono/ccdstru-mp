@@ -10,7 +10,6 @@ int main()
         state.over = 0;
 
         state.uno.posCount = 0;
-        state.dos.posCount = 0;
         state.tres.posCount = 0;
         state.f.posCount = 0;
 
@@ -19,7 +18,8 @@ int main()
 
         while (state.over != 1)
         {
-                nextPlayerMove(getPlayerMove(&state),&state);
+                getPlayerMove(&state);
+                nextPlayerMove(&state);
                 displayBoard(&state);
                 gameOver(&state);
         }

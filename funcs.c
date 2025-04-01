@@ -22,59 +22,43 @@ void getInput(int *input, char prompt)
         while (*input < 1 || *input > 4);
 }
 
-posType getPlayerMove(stateType *state)
+void getPlayerMove(stateType *state)
 {
-        posType pos;
         int valid = 0;
+        posType *pos = &state->input;
 
-        if (!state->turn)
-                printf("=== %s ===\n", "Dos Turn");
-        else if (state->turn && !state->go)
-                printf("=== %s ===\n", "Tres Turn");
+        if (state->turn && !state->go)
+                printf("=== %s ===\n", "Tres Turn [X]");
         else if (state->turn && state->go)
-                printf("=== %s ===\n", "Uno Turn");
+                printf("=== %s ===\n", "Uno Turn [O]");
+        else if (!state->turn)
+                printf("=== %s ===\n", "Dos Turn (Delete Position)");
 
         do
         {
-                getInput(&pos.x, 'X');
-                getInput(&pos.y, 'Y');
+                getInput(&state->input.x, 'X');
+                getInput(&state->input.y, 'Y');
 
                 if (!state->turn)
                 {
-                        if (isElementOf(pos, state->uno) || isElementOf(pos, state->tres))
+                        if (isElementOf(*pos, state->uno) || isElementOf(*pos, state->tres))
                                 valid = 1;
                         else
-                                printf("%s%s%s", 
-                                       COLOR_REDBOLD, 
-                                       "Coordinate isn't taken. Please enter an occupied coordinate\n", 
-                                       COLOR_RESET);
+                                printf("%s%s%s", COLOR_REDBOLD, "Coordinate isn't taken. Please enter an occupied coordinate\n", COLOR_RESET);
                 }
 
-                else if (state->turn && !state->go)
+                if (state->turn)
                 {
-                        if (isElementOf(pos, state->f) && !isElementOf(pos, state->uno))
+                        if (state->go && isElementOf(*pos, state->f) && !isElementOf(*pos,state->tres))
+                                valid = 1;
+                        else if (!state->go && isElementOf(*pos, state->f) && !isElementOf(*pos,state->uno))
                                 valid = 1;
                         else
-                                printf("%s%s%s", 
-                                       COLOR_REDBOLD, 
-                                       "Coordinate has been taken. Please enter an empty coordinate\n", 
-                                       COLOR_RESET);
+                                printf("%s%s%s", COLOR_REDBOLD, "Coordinate has been taken. Please enter an empty coordinate\n", COLOR_RESET);
                 }
 
-                else if (state->turn && state->go)
-                {
-                        if (isElementOf(pos, state->f) && !isElementOf(pos, state->tres))
-                                valid = 1;
-                        else
-                                printf("%s%s%s", 
-                                       COLOR_REDBOLD, 
-                                       "Coordinate has been taken. Please enter an empty coordinate\n", 
-                                       COLOR_RESET);
-                }
         }
         while (valid != 1);
-
-        return pos;
 }
 
 void displayBoard(stateType *state)
@@ -95,7 +79,7 @@ void displayBoard(stateType *state)
                                 printf(" %c ", 'X');
                         else if (isElementOf(tempPos, state->tres))
                                 printf(" %c ", 'O');
-                        else if (isElementOf(tempPos, state->f))
+                        else
                                 printf(" %c ", ' ');
 
                         if (j < 4)
@@ -123,14 +107,14 @@ int isElementOf(posType pos, playerType player)
         return found;
 }
 
-int findPosIndex(posType pos, playerType player)
+int findPosIndex(posType pos, playerType *player)
 {
         int index = -1;
         int i;
 
-        for (i = 0; i < player.posCount; i++)
+        for (i = 0; i < player->posCount; i++)
         {
-                if (player.coords[i].x == pos.x && player.coords[i].y == pos.y)
+                if (player->coords[i].x == pos.x && player->coords[i].y == pos.y)
                         index = i;
         }
         return index;
@@ -139,7 +123,7 @@ int findPosIndex(posType pos, playerType player)
 void deletePos(posType pos, playerType *player)
 {
         int i;
-        int posIndex = findPosIndex(pos, *player);
+        int posIndex = findPosIndex(pos, player);
 
         if (posIndex != -1)
         {
@@ -151,6 +135,8 @@ void deletePos(posType pos, playerType *player)
 
 void fillSetF(stateType *state)
 {
+        state->f.posCount = 0;
+
         int i = 0;
         int j, k;
 
@@ -182,27 +168,21 @@ void setFUpdate(stateType *state)
 void fillSetW(posType w[3][4])
 {
         int i = 0;
-        int j = 4;
-
-        while (i < 4)
-        {
-                w[1][i].x = i;
-                w[1][i].y = j;
-
-                i++;
-                j--;
-        }
 
         for (i = 0; i < 4; i++)
         {
-                w[0][i].x = 1;
-                w[0][i].y = i;
+                w[0][i].x = i + 1;
+                w[0][i].y = 1;
         }
-
         for (i = 0; i < 4; i++)
         {
-                w[2][i].x = 4;
-                w[2][i].y = i;
+                w[1][i].x = i + 1;
+                w[1][i].y = 4 - i;
+        }
+        for (i = 0; i < 4; i++)
+        {
+                w[2][i].x = i + 1;
+                w[2][i].y = 4;
         }
 }
 
@@ -211,7 +191,7 @@ int isSetElementOfSetW(playerType player, posType w[3][4])
         int i = 0;
         int j = 0; 
         int setElementOfW = 0;
-        int totalMatch;
+        int totalMatch = 0;
 
         for (i = 0; i < 3; i++)
         {
@@ -229,26 +209,26 @@ int isSetElementOfSetW(playerType player, posType w[3][4])
         return setElementOfW;
 }
 
-void nextPlayerMove(posType pos, stateType *state)
+void nextPlayerMove(stateType *state)
 {
-        if (state->turn == 1 && state->go == 1 && isElementOf(pos, state->f))
+        if (state->turn && state->go && isElementOf(state->input, state->f))
         {
-                state->uno.coords[state->uno.posCount] = pos;
+                state->uno.coords[state->uno.posCount] = state->input;
                 state->uno.posCount++;
 
                 state->turn = !state->turn;
                 state->go = !state->go;
         }
-        else if (!state->turn && (isElementOf(pos, state->uno) || isElementOf(pos, state->tres)))
+        else if (!state->turn && (isElementOf(state->input, state->uno) || isElementOf(state->input, state->tres)))
         {
-                deletePos(pos, &state->uno);
-                deletePos(pos, &state->tres);
+                deletePos(state->input, &state->uno);
+                deletePos(state->input, &state->tres);
 
                 state->turn = !state->turn;
         }
-        else if (state->turn && !state->go && isElementOf(pos, state->f))
+        else if (state->turn && !state->go && isElementOf(state->input, state->f))
         {
-                state->tres.coords[state->tres.posCount] = pos;
+                state->tres.coords[state->tres.posCount] = state->input;
                 state->tres.posCount++;
 
                 state->go = !state->go;
@@ -270,7 +250,7 @@ void gameOver(stateType *state)
 {
         setOverState(state);
 
-        if (state->over == 1)
+        if (state->over)
         {
                 int unoWin = isSetElementOfSetW(state->uno, state->w);
                 int tresWin = isSetElementOfSetW(state->tres, state->w);
