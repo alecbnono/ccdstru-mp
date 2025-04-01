@@ -14,9 +14,14 @@ int main()
         state.tres.posCount = 0;
         state.f.posCount = 0;
 
+        fillSetF(&state);
+        fillSetW(state.w);
+
         while (state.over != 1)
         {
-                
+                nextPlayerMove(getPlayerMove(&state),&state);
+                displayBoard(&state);
+                gameOver(&state);
         }
 
         return 0;
