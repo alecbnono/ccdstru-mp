@@ -1,49 +1,56 @@
-# CCDSTRU Machine Project - Discrete Structures
+# CCDSTRU Machine Project: Discrete Structures
 **Term 2, AY 2024-2025**
 
 ## Project Overview
-[cite_start]This project is a C-language implementation of a formal system defined by set theory and relational logic[cite: 8]. [cite_start]The system models state-based interactions between three entities (**Uno**, **Dos**, and **Tres**) within a coordinate space[cite: 16, 43].
+This project is a C-based implementation of a formal system grounded in Set Theory and Relational Logic. It simulates a state-based game played on a 4x4 grid where three entities—**Uno**, **Dos**, and **Tres**—compete based on specific mathematical win conditions.
 
-## Mathematical Specifications
+## Mathematical Foundations
 
-### 1. Universal Sets
-The system is built upon the following mathematical foundations:
-* [cite_start]**Set A**: $\{x \in \mathbb{Z}^{+} \mid x < 5\}$, which defines the coordinate range $\{1, 2, 3, 4\}$[cite: 10].
-* [cite_start]**Set P**: The Cartesian product $A \times A$, representing a 4x4 coordinate grid[cite: 11].
-* [cite_start]**Set B**: Boolean values {true, false} used for system state flags[cite: 12].
-* [cite_start]**Set C**: A collection of specific winning coordinate patterns[cite: 13].
+### 1. The Coordinate Space
+The system is defined by the following sets:
+* **Set A**: $\{1, 2, 3, 4\}$, defining the coordinate range.
+* **Set P**: $A \times A$, the Cartesian product representing all 16 grid positions (e.g., $(1,1)$ to $(4,4)$).
+* **Set B**: Boolean values `{true, false}` used for system state flags.
 
-### 2. Relations and Winning Conditions
-* [cite_start]**Relation T**: A relation on $A$ that is simultaneously reflexive, symmetric, antisymmetric, and transitive (the identity relation)[cite: 14].
-* [cite_start]**Set W**: Defined by the set difference $W = C - T$, representing the valid winning configurations for the system[cite: 20].
+### 2. The Hourglass Pattern ($W$)
+The winning configurations are derived from the relationship between two specific sets:
+* **Relation T**: A relation on $A$ that is reflexive, symmetric, antisymmetric, and transitive. In a 4x4 grid, this corresponds to the **Main Diagonal**: `{(1,1), (2,2), (3,3), (4,4)}`.
+* **Set C**: A collection of four predefined patterns: the top row, the bottom row, the main diagonal, and the anti-diagonal.
+* **Set W ($C - T$)**: By calculating the set difference between $C$ and $T$, we remove the main diagonal. The remaining patterns form an **Hourglass** shape (consisting of the top row, bottom row, and the anti-diagonal).
 
-## System Components
+## System Behavior
 
-### System Variables
-The program tracks the following variables to maintain the game state:
-* [cite_start]**Subsets of P**: `Uno`, `Dos`, `Tres`, and `F` (representing player moves and available spaces)[cite: 16].
-* [cite_start]**State Flags**: `turn` (current player), `go` (active status), and `over` (termination status)[cite: 17, 23].
+### State Variables
+* **Entity Sets**: `Uno`, `Dos`, and `Tres` (all are subsets of $P$).
+* **F**: The set of remaining available moves in the coordinate space.
+* **Flags**: `turn` (current player), `go` (active status), and `over` (termination status).
 
-### Initialization
-At the start of the program, the system state is defined as follows:
-* [cite_start]`Uno`, `Dos`, and `Tres` are initialized as empty sets ($\emptyset$)[cite: 24, 25, 26].
-* [cite_start]`go` and `over` are initialized as Boolean values[cite: 23].
+### Move Logic (`NextPlayerMove`)
+When a move is made at a position ($pos \in P$):
+1. The system checks if the move is valid based on the current `turn` and `go` status.
+2. The position is added to the set of the respective player (`Uno` or `Tres`).
+3. The `turn` and `go` flags are toggled to transition to the next state.
 
-## Logic and Behavior
+### Game Termination (`GameOver`)
+The game ends when the `over` flag becomes true. The winner is determined by the following logic:
 
-### NextPlayerMove(pos)
-When a move is made at a position ($pos \in P$), the system updates based on the following logic:
-* [cite_start]**Turn Management**: The `turn` variable alternates between players ($\neg turn$)[cite: 36].
-* [cite_start]**Set Updates**: Depending on the state of `turn` and `go`, the position is added to either set `Uno` or set `Tres`[cite: 35, 41].
-* [cite_start]**Toggle State**: The `go` flag is flipped ($\neg go$) to signal the next phase of the move[cite: 37, 42].
+| Winner | Condition |
+| :--- | :--- |
+| **Uno Wins** | The coordinates in set `Uno` match a pattern in $W$. |
+| **Tres Wins** | The coordinates in set `Tres` match a pattern in $W$. |
+| **Dos Wins** | The set of available moves $F$ becomes empty before any other win condition. |
 
-### GameOver Condition
-[cite_start]The game terminates (`over` becomes true) under three specific conditions[cite: 21]:
-1. [cite_start]**Uno Wins**: If the set of positions in `Uno` matches a pattern in `W`[cite: 44, 49].
-2. [cite_start]**Tres Wins**: If the set of positions in `Tres` matches a pattern in `W`[cite: 46, 51].
-3. [cite_start]**Dos Wins**: If the set of available positions `F` becomes empty ($\emptyset$) before a winner is declared[cite: 45, 50].
+## Technical Implementation
+* **Language**: C
+* **Target Environment**: Arch Linux (Standard C libraries)
+* **Logic**: Set operations are implemented using array manipulation or bitmasking to simulate formal set behavior.
 
-## Implementation Details
-* [cite_start]**Language**: C [cite: 8]
-* [cite_start]**Deadline**: April 1, 2025, 08:00 [cite: 7]
-* [cite_start]**Department**: Software Technology, College of Computer Studies [cite: 3, 5]
+## How to Run
+1. **Compile**:
+   ```bash
+   gcc -Wall -std=c99 main.c -o main
+   ```
+2. **Execute**:
+   ```
+   ./main
+   ```
